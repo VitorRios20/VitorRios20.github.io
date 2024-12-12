@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barcode App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: row;
+            height: 100vh;
+        }
+        .container {
+            text-align: center;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            flex: 1;
+        }
+        .sidebar {
+            width: 300px;
+            background-color: #f1f1f1;
+            padding: 20px;
+            overflow-y: auto;
+            border-right: 1px solid #ccc;
+        }
+        input {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #007BFF;
+            color: white;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .popup {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            border-radius: 4px;
+            color: white;
+            display: none;
+        }
+        .popup.success {
+            background-color: #28a745;
+        }
+        .popup.error {
+            background-color: #dc3545;
+        }
+        .counter {
+            font-size: 20px;
+            margin: 10px 0;
+        }
+        .entry-list {
+            margin-top: 20px;
+        }
+        .entry {
+            background: #fff;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="counter" id="counter">Pacotes verificados: 0</div>
+        <div class="entry-list" id="entryList"></div>
+    </div>
+    <div class="container">
+        <h1>Conferencia de duplicados</h1>
+        <input type="text" id="barcode1" placeholder="Enter first barcode">
+        <input type="text" id="barcode2" placeholder="Enter second barcode">
+        <div>
+            <button id="newConference">Nova Conferencia</button>
+            <!--<button id="generateReport">Gerar Relatorio</button> -->
+        </div>
+    </div>
+    <div class="popup" id="popup"></div>
+
+    <script>
+        let entries = [];
+        const barcode1 = document.getElementById('barcode1');
+        const barcode2 = document.getElementById('barcode2');
+        const popup = document.getElementById('popup');
+        const counter = document.getElementById('counter');
+        const entryList = document.getElementById('entryList');
+
+        const showPopup = (message, type) => {
+            popup.textContent = message;
+            popup.className = `popup ${type}`;
+            popup.style.display = 'block';
+            setTimeout(() => popup.style.display = 'none', 2000);
+        };
+
+        const updateCounter = () => {
+            counter.textContent = `Total Entries: ${entries.length}`;
+        };
+
+        const updateEntryList = () => {
+            entryList.innerHTML = '';
+            entries.forEach(({ barcode1, barcode2 }) => {
+                const entryDiv = document.createElement('div');
+                entryDiv.className = 'entry';
+                entryDiv.textContent = `${barcode1} - ${barcode2}`;
+                entryList.appendChild(entryDiv);
+            });
+        };
+
+        barcode1.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                barcode2.focus();
+            }
+        });
+
+        barcode2.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const code1 = barcode1.value.trim();
+                const code2 = barcode2.value.trim();
+
+                if (!code1 || !code2) {
+                    showPopup('Please fill both barcodes!', 'error');
+                    return;
+                }
+
+                const existingEntry = entries.find(entry => entry.barcode1 === code1 && entry.barcode2 === code2);
+
+                if (existingEntry) {
+                    showPopup('Duplicate Entry!', 'error');
+                } else {
+                    entries.push({ barcode1: code1, barcode2: code2 });
+                    showPopup('Entry Added!', 'success');
+                    updateCounter();
+                    updateEntryList();
+                }
+
+                barcode1.value = '';
+                barcode2.value = '';
+                barcode1.focus();
+
+                console.log(JSON.stringify(entries, null, 2));
+            }
+        });
+
+        document.getElementById('newConference').addEventListener('click', () => {
+            entries = [];
+            showPopup('Data Reset!', 'success');
+            updateCounter();
+            updateEntryList();
+        });
+
+        barcode1.focus();
+    </script>
+</body>
+</html>
