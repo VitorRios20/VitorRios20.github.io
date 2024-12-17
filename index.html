@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conferencia</title>
+    <title>Conferencia De Pacotes</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -51,10 +51,10 @@
             background-color: #0056b3;
         }
         .popup {
-            position: fixed;
-            bottom: 20px;
+            position: flex;
+            top: 20px;
             left: 50%;
-            transform: translateX(-50%);
+            /*transform: translateX(-50%);*/
             padding: 10px 20px;
             border-radius: 4px;
             color: white;
@@ -111,6 +111,7 @@
             popup.className = `popup ${type}`;
             popup.style.display = 'block';
             setTimeout(() => popup.style.display = 'none', 2000);
+            setTimeout(() => background.color = 'red', 1000);
         };
 
         const updateCounter = () => {
@@ -139,17 +140,17 @@
                 const code2 = barcode2.value.trim();
 
                 if (!code1 || !code2) {
-                    showPopup('Please fill both barcodes!', 'error');
+                    showPopup('FAVOR ESCANEAR 2 CODIGOS!!!!', 'error');
                     return;
                 }
 
                 const existingEntry = entries.find(entry => entry.barcode1 === code1 || entry.barcode2 === code2  || entry.barcode1 === code2 || entry.barcode2 === code1 );
 
                 if (existingEntry) {
-                    showPopup('Duplicate Entry!', 'error');
+                    showPopup('ERRO PACOTE DUPLICADO!!!', 'error');
                 } else {
                     entries.push({ barcode1: code1, barcode2: code2 });
-                    showPopup('Entry Added!', 'success');
+                    showPopup('PACOTE CONFIRMADO!!', 'success');
                     updateCounter();
                     updateEntryList();
                 }
